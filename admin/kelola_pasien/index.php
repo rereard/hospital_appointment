@@ -267,7 +267,7 @@
                   </div>
                   <div class="form-group">
                     <label for="addAlamatPasien">Alamat</label>
-                    <input type="text" class="form-control" id="addAlamatPasien" placeholder="Alamat" value="jl anjing" />
+                    <input type="text" class="form-control" id="addAlamatPasien" placeholder="Alamat" value="jl jalan" />
                   </div>
                   <div class="form-group">
                     <label for="addNoKTPPasien">Nomor KTP</label>

@@ -156,21 +156,6 @@
                           </div>
                         </td>
                       </tr>
-                      <tr>
-                        <td>2</td>
-                        <td>Poli Payudara</td>
-                        <td>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Exercitationem molestiae ratione odio!</td>
-                        <td>
-                          <div class="margin">
-                            <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#modal-editDokter">
-                              <i class="fa fa-pen"></i> Edit
-                            </button>
-                            <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#modal-sm">
-                              <i class="fa fa-trash"></i> Hapus
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
                     </tbody>
                   </table>
                 </div>
@@ -265,7 +250,7 @@
               </div>
               <div class="form-group">
                 <label for="addKeteranganPoli">Keterangan</label>
-                <input type="text" class="form-control" id="addKeteranganPoli" placeholder="Keterangan" value="poli memek" />
+                <input type="text" class="form-control" id="addKeteranganPoli" placeholder="Keterangan" value="poli polian" />
               </div>
               <div class="card-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">

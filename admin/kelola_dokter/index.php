@@ -245,7 +245,6 @@
                     <select class="custom-select rounded-0" id="addPoliDokter">
                       <option>-------</option>
                       <option>Poli Kelamin Wanita</option>
-                      <option>Poli Payudara</option>
                     </select>
                   </div>
                   <div class="card-footer">
@@ -282,7 +281,7 @@
                   </div>
                   <div class="form-group">
                     <label for="addAlamatDokter">Alamat</label>
-                    <input type="text" class="form-control" id="addAlamatDokter" placeholder="Alamat" value="ngentot" />
+                    <input type="text" class="form-control" id="addAlamatDokter" placeholder="Alamat" value="jalan jalan" />
                   </div>
                   <div class="form-group">
                     <label for="addNoHPDokter">Nomor HP</label>
@@ -293,7 +292,6 @@
                     <select class="custom-select rounded-0" id="addPoliDokter">
                       <option>-------</option>
                       <option selected>Poli Kelamin Wanita</option>
-                      <option>Poli Payudara</option>
                     </select>
                   </div>
                   <div class="card-footer">
