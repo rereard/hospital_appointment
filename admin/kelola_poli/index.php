@@ -33,6 +33,44 @@
 </head>
 
 <body class="hold-transition sidebar-mini layout-fixed">
+  <?php
+  session_start();
+  ?>
+  <?php
+  require_once("../../connection.php");
+  if (isset($_POST['addPoli'])) {
+    $namaPoli = $_POST['namaPoli'];
+    $ketPoli = $_POST['ketPoli'];
+
+    $query = mysqli_query($conn, "INSERT INTO poli (nama_poli, keterangan) VALUES ('$namaPoli', '$ketPoli')");
+    if ($query) {
+      header('Refresh:0');
+    } else {
+      header('Refresh:0');
+    }
+  };
+  if (isset($_POST['editPoli'])) {
+    $idPoli = $_POST['idPoli'];
+    $editNamaPoli = $_POST['editNamaPoli'];
+    $editKetPoli = $_POST['editKeteranganPoli'];
+
+    $query = mysqli_query($conn, "UPDATE poli SET nama_poli = '$editNamaPoli', keterangan = '$editKetPoli' WHERE id = $idPoli");
+    if ($query) {
+      header('Refresh:0');
+    } else {
+      header('Refresh:0');
+    }
+  };
+  if (isset($_POST["hapusPoli"])) {
+    $idPoli = $_POST["hapusPoli"];
+    $query = mysqli_query($conn, "DELETE FROM poli WHERE id = $idPoli");
+    if ($query) {
+      header('Refresh:0');
+    } else {
+      header('Refresh:0');
+    }
+  }
+  ?>
   <div class="wrapper">
     <!-- Navbar -->
     <nav class="main-header navbar navbar-expand navbar-white navbar-light">
@@ -141,28 +179,38 @@
                       </tr>
                     </thead>
                     <tbody>
-                      <tr>
-                        <td>1</td>
-                        <td>Poli Kelamin Wanita</td>
-                        <td>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Exercitationem molestiae ratione odio!</td>
-                        <td>
-                          <div class="margin">
-                            <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#modal-editDokter">
-                              <i class="fa fa-pen"></i> Edit
-                            </button>
-                            <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#modal-sm">
-                              <i class="fa fa-trash"></i> Hapus
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
+                      <?php
+                      require_once("../../connection.php");
+                      $dataPoli = array();
+                      $query = mysqli_query($conn, "SELECT * FROM poli ORDER BY id ASC");
+                      $no = 1;
+                      $idPoli = 0;
+                      ?>
+                      <?php while ($row = mysqli_fetch_array($query)) : ?>
+                        <tr>
+                          <td><?php echo $no ?></td>
+                          <td><?php echo $row['nama_poli'] ?></td>
+                          <td><?php echo $row['keterangan'] ?></td>
+                          <td>
+                            <div class="margin">
+                              <button type="button" value="<?php echo $row['id'] ?>" class="buttonEdit2 btn btn-warning" data-toggle="modal" data-target="#modal-editPoli">
+                                <i class="fa fa-pen"></i> Edit
+                              </button>
+                              <button value="<?php echo $row['id'] ?>" type="button" class="buttonHapus2 btn btn-danger" data-toggle="modal" data-target="#modal-sm">
+                                <i class="fa fa-trash"></i> Hapus
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                        <?php $no++ ?>
+                      <?php endwhile; ?>
                     </tbody>
                   </table>
                 </div>
                 <!-- /.card-body -->
                 <div class="card-footer clearfix">
                   <dic class="m-0 float-right">
-                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal-addDokter">
+                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal-addPoli">
                       <i class="fa fa-plus"></i> Tambah
                     </button>
                   </dic>
@@ -187,7 +235,7 @@
               </div>
               <div class="modal-footer justify-content-between">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Tutup</button>
-                <button type="button" class="btn btn-danger toastrDefaultSuccess" data-dismiss="modal">Hapus</button>
+                <button type="button" class="buttonHapus btn btn-danger toastrDefaultSuccess" data-dismiss="modal">Hapus</button>
               </div>
             </div>
             <!-- /.modal-content -->
@@ -196,7 +244,7 @@
         </div>
         <!-- /.modal -->
 
-        <div class="modal fade" id="modal-addDokter">
+        <div class="modal fade" id="modal-addPoli">
           <div class="modal-dialog">
             <div class="modal-content">
               <div class="modal-header">
@@ -206,23 +254,21 @@
                 </button>
               </div>
               <div class="modal-body">
-                <form>
+                <form action="../../admin/kelola_poli/" method="post">
                   <div class="form-group">
                     <label for="addNamaPoli">Nama Poli</label>
-                    <input type="text" class="form-control" id="addNamaPoli" placeholder="Nama Poli" />
+                    <input name="namaPoli" type="text" class="form-control" id="addNamaPoli" placeholder="Nama Poli" required />
                   </div>
                   <div class="form-group">
                     <label for="addKeteranganPoli">Keterangan</label>
-                    <input type="text" class="form-control" id="addKeteranganPoli" placeholder="Keterangan" />
+                    <input name="ketPoli" type="text" class="form-control" id="addKeteranganPoli" placeholder="Keterangan" />
                   </div>
               </div>
               <div class="card-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">
                   Tutup
                 </button>
-                <button type="submit" class="btn btn-primary float-right">
-                  Tambah
-                </button>
+                <input type="submit" name="addPoli" value="Tambah" class="btn btn-primary float-right" />
               </div>
               </form>
             </div>
@@ -233,7 +279,7 @@
     </div>
     <!-- /.modal -->
 
-    <div class="modal fade" id="modal-editDokter">
+    <div class="modal fade" id="modal-editPoli">
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
@@ -243,22 +289,24 @@
             </button>
           </div>
           <div class="modal-body">
-            <form>
+            <form action="../../admin/kelola_poli/" method="post">
               <div class="form-group">
-                <label for="addNamaPoli">Nama Poli</label>
-                <input type="text" class="form-control" id="addNamaPoli" placeholder="Nama Poli" value="Poli Kelamin" />
+                <label for="idPoli">ID</label>
+                <input name="idPoli" type="text" class="form-control" id="idPoli" placeholder="ID Poli" readonly />
               </div>
               <div class="form-group">
-                <label for="addKeteranganPoli">Keterangan</label>
-                <input type="text" class="form-control" id="addKeteranganPoli" placeholder="Keterangan" value="poli polian" />
+                <label for="editNamaPoli">Nama Poli</label>
+                <input name="editNamaPoli" type="text" class="form-control" id="editNamaPoli" placeholder="Nama Poli" />
+              </div>
+              <div class="form-group">
+                <label for="editKeteranganPoli">Keterangan</label>
+                <input name="editKeteranganPoli" type="text" class="form-control" id="editKeteranganPoli" placeholder="Keterangan" />
               </div>
               <div class="card-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">
                   Tutup
                 </button>
-                <button type="submit" class="btn btn-warning float-right">
-                  Edit
-                </button>
+                <input type="submit" name="editPoli" value="Edit" class="buttonEdit btn btn-warning float-right" />
               </div>
             </form>
           </div>
@@ -288,11 +336,47 @@
   <!-- SweetAlert2 -->
   <script src="../../plugins/sweetalert2/sweetalert2.min.js"></script>
   <script>
+    var selectedId = 0;
     $(function() {
       $('.toastrDefaultSuccess').click(function() {
         toastr.success('Item berhasil dihapus')
       });
     });
+    $('.buttonHapus2').click(function() {
+      selectedId = $(this).val();
+      console.log(selectedId);
+    })
+    $('.buttonEdit2').click(function() {
+      selectedId = $(this).val();
+      $.ajax({
+        url: 'poliToJSON.php',
+        type: 'GET',
+        data: {
+          id: selectedId
+        },
+        dataType: 'json',
+        success: function(data) {
+          $('#idPoli').val(data.id);
+          $('#editNamaPoli').val(data.nama_poli);
+          $('#editKeteranganPoli').val(data.keterangan);
+          console.log(data);
+        },
+        error: function(error) {
+          console.log('Error fetching data: ' + error);
+        },
+      })
+      console.log(selectedId);
+    })
+    $('.buttonHapus').click(function() {
+      var clickBtnValue = selectedId;
+      var ajaxurl = '../../admin/kelola_poli/';
+      data = {
+        'hapusPoli': clickBtnValue
+      };
+      $.post(ajaxurl, data, function(response) {
+        location.reload();
+      });
+    })
   </script>
 </body>
 
