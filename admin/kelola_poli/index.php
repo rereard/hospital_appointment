@@ -169,13 +169,13 @@
               <div class="card">
                 <!-- /.card-header -->
                 <div class="card-body table-responsive p-0">
-                  <table class="table table-hover text-nowrap">
+                  <table class="table table-hover">
                     <thead>
                       <tr>
                         <th>#</th>
                         <th>Nama Poli</th>
                         <th>Keterangan</th>
-                        <th>Aksi</th>
+                        <th style="width: 160px;">Aksi</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -192,14 +192,12 @@
                           <td><?php echo $row['nama_poli'] ?></td>
                           <td><?php echo $row['keterangan'] ?></td>
                           <td>
-                            <div class="margin">
-                              <button type="button" value="<?php echo $row['id'] ?>" class="buttonEdit2 btn btn-warning" data-toggle="modal" data-target="#modal-editPoli">
-                                <i class="fa fa-pen"></i> Edit
-                              </button>
-                              <button value="<?php echo $row['id'] ?>" type="button" class="buttonHapus2 btn btn-danger" data-toggle="modal" data-target="#modal-sm">
-                                <i class="fa fa-trash"></i> Hapus
-                              </button>
-                            </div>
+                            <button type="button" value="<?php echo $row['id'] ?>" class="buttonEdit2 btn btn-warning btn-block mb-2" data-toggle="modal" data-target="#modal-editPoli">
+                              <i class="fa fa-pen"></i> Edit
+                            </button>
+                            <button value="<?php echo $row['id'] ?>" type="button" class="buttonHapus2 btn btn-danger btn-block text-nowrap" data-toggle="modal" data-target="#modal-sm">
+                              <i class="fa fa-trash"></i> Hapus
+                            </button>
                           </td>
                         </tr>
                         <?php $no++ ?>

@@ -128,20 +128,32 @@
       <!-- Main content -->
       <section class="content">
         <div class="container-fluid">
+          <?php
+          require("../connection.php");
+          $querydokter = mysqli_query($conn, "SELECT * FROM dokter ORDER BY id ASC");
+          $querypoli = mysqli_query($conn, "SELECT * FROM poli ORDER BY id ASC");
+          $querypasien = mysqli_query($conn, "SELECT * FROM pasien ORDER BY id ASC");
+          $queryobat = mysqli_query($conn, "SELECT * FROM obat ORDER BY id ASC");
+          $dokter = mysqli_num_rows($querydokter);
+          $poli = mysqli_num_rows($querypoli);
+          $pasien = mysqli_num_rows($querypasien);
+          $obat = mysqli_num_rows($queryobat);
+          echo $dokter, $poli, $pasien, $obat;
+          ?>
           <!-- Small boxes (Stat box) -->
           <div class="row">
             <div class="col-lg-3 col-6">
               <!-- small box -->
               <div class="small-box bg-info">
                 <div class="inner">
-                  <h3>150</h3>
+                  <h3><?php echo $dokter ?></h3>
 
                   <p>Dokter</p>
                 </div>
                 <div class="icon">
                   <i class="fas fa-user-doctor"></i>
                 </div>
-                <a href="#" class="small-box-footer">Kelola Dokter <i class="fas fa-arrow-circle-right"></i></a>
+                <a href="kelola_dokter" class="small-box-footer">Kelola Dokter <i class="fas fa-arrow-circle-right"></i></a>
               </div>
             </div>
             <!-- ./col -->
@@ -149,14 +161,14 @@
               <!-- small box -->
               <div class="small-box bg-success">
                 <div class="inner">
-                  <h3>53</h3>
+                  <h3><?php echo $poli ?></h3>
 
                   <p>Poli</p>
                 </div>
                 <div class="icon">
                   <i class="fas fa-house-chimney-medical"></i>
                 </div>
-                <a href="#" class="small-box-footer">Kelola Poli <i class="fas fa-arrow-circle-right"></i></a>
+                <a href="kelola_poli" class="small-box-footer">Kelola Poli <i class="fas fa-arrow-circle-right"></i></a>
               </div>
             </div>
             <!-- ./col -->
@@ -164,14 +176,14 @@
               <!-- small box -->
               <div class="small-box bg-warning">
                 <div class="inner">
-                  <h3>44</h3>
+                  <h3><?php echo $pasien ?></h3>
 
                   <p>Pasien Terdaftar</p>
                 </div>
                 <div class="icon">
                   <i class="fas fa-hospital-user"></i>
                 </div>
-                <a href="#" class="small-box-footer">Kelola Pasien <i class="fas fa-arrow-circle-right"></i></a>
+                <a href="kelola_pasien" class="small-box-footer">Kelola Pasien <i class="fas fa-arrow-circle-right"></i></a>
               </div>
             </div>
             <!-- ./col -->
@@ -179,14 +191,14 @@
               <!-- small box -->
               <div class="small-box bg-danger">
                 <div class="inner">
-                  <h3>65</h3>
+                  <h3><?php echo $obat ?></h3>
 
                   <p>Obat</p>
                 </div>
                 <div class="icon">
                   <i class="fas fa-capsules"></i>
                 </div>
-                <a href="#" class="small-box-footer">Kelola Obat <i class="fas fa-arrow-circle-right"></i></a>
+                <a href="kelola_obat" class="small-box-footer">Kelola Obat <i class="fas fa-arrow-circle-right"></i></a>
               </div>
             </div>
             <!-- ./col -->
