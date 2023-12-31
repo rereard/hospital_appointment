@@ -1,3 +1,13 @@
+<?php
+session_start();
+
+// Check if the user is not authenticated
+if (!isset($_SESSION['dokter_authenticated']) || !$_SESSION['dokter_authenticated']) {
+  header('Location: ../login/');
+  exit();
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -55,6 +65,12 @@
       <a href="../dokter" class="brand-link">
         <img src="https://cdn-icons-png.flaticon.com/512/6069/6069189.png" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
         <!-- <i class="nav-icon fas fa-user-tie brand-image"></i> -->
+        <?php
+        require_once("../connection.php");
+        $id = $_SESSION['id_dokter'];
+        $queryDokter = mysqli_query($conn, "SELECT * FROM dokter WHERE id = $id");
+        $dokter = mysqli_fetch_assoc($queryDokter);
+        ?>
         <span class="brand-text font-weight-light">Halaman Dokter</span>
       </a>
 
@@ -95,12 +111,12 @@
       <div class="sidebar sidebar-custom">
         <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
           <li class="nav-item">
-            <a href="#" class="nav-link">
-              <i class="fas fa-right-from-bracket"></i>
-              <p>
-                Logout
-              </p>
-            </a>
+            <form method="post" action="../login/logout.php">
+              <button class="btn nav-link btn-link text-white d-flex justify-content-start align-items-center">
+                <i class="fas fa-right-from-bracket mr-1"></i>
+                <p>Logout</p>
+              </button>
+            </form>
           </li>
         </ul>
       </div>
@@ -113,7 +129,7 @@
         <div class="container-fluid">
           <div class="row mb-2">
             <div class="col-sm-6">
-              <h1 class="m-0">Halo Dr. Radjiman!</h1>
+              <h1 class="m-0">Halo <?php echo $dokter['nama'] ?></h1>
             </div><!-- /.col -->
           </div><!-- /.row -->
         </div><!-- /.container-fluid -->

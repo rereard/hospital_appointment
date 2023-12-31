@@ -13,6 +13,9 @@ if ($_SESSION) {
   }
 }
 
+require_once("../connection.php");
+$queryDokter = mysqli_query($conn, "SELECT * FROM dokter ORDER BY id ASC");
+
 // Check if the form is submitted
 if (isset($_POST['loginAdmin'])) {
   $username = $_POST['usernameAdmin'];
@@ -25,6 +28,20 @@ if (isset($_POST['loginAdmin'])) {
     exit();
   } else {
     $error = "Invalid credentials";
+  }
+}
+if (isset($_POST['loginDokter'])) {
+  $no_hp = $_POST['noHPDokter'];
+  $password = $_POST['passwordDokter'];
+  while ($row = mysqli_fetch_array($queryDokter)) {
+    if ($no_hp == $row['no_hp'] && $password == $row['password']) {
+      $_SESSION['dokter_authenticated'] = true;
+      $_SESSION['id_dokter'] = $row['id'];
+      header('Location: ../dokter/');
+      exit();
+    } else {
+      $error = "Invalid credentials";
+    }
   }
 }
 ?>
@@ -66,9 +83,6 @@ if (isset($_POST['loginAdmin'])) {
         <div class="tab-content" id="custom-tabs-one-tabContent">
           <div class="tab-pane fade show active" id="custom-tabs-one-admin" role="tabpanel" aria-labelledby="custom-tabs-one-admin-tab">
             <p class="login-box-msg" style="margin-top: 10px">Masuk sebagai Admin</p>
-            <?php if (isset($error)) : ?>
-              <p class="text-danger"><?php echo 'Username atau password salah' ?></p>
-            <?php endif; ?>
             <form action="../login/" method="post">
               <div class="input-group mb-3">
                 <input required name="usernameAdmin" type="text" class="form-control" placeholder="Username">
@@ -96,9 +110,9 @@ if (isset($_POST['loginAdmin'])) {
           </div>
           <div class="tab-pane fade" id="custom-tabs-one-dokter" role="tabpanel" aria-labelledby="custom-tabs-one-dokter-tab">
             <p class="login-box-msg" style="margin-top: 10px">Masuk sebagai Dokter</p>
-            <form>
+            <form action="../login/" method="post">
               <div class="input-group mb-3">
-                <input required type="email" class="form-control" placeholder="Email">
+                <input required type="phone" name="noHPDokter" class="form-control" placeholder="No HP">
                 <div class="input-group-append">
                   <div class="input-group-text">
                     <span class="fas fa-envelope"></span>
@@ -106,7 +120,7 @@ if (isset($_POST['loginAdmin'])) {
                 </div>
               </div>
               <div class="input-group mb-3">
-                <input required type="password" class="form-control" placeholder="Password">
+                <input required type="password" name="passwordDokter" class="form-control" placeholder="Password">
                 <div class="input-group-append">
                   <div class="input-group-text">
                     <span class="fas fa-lock"></span>
@@ -121,6 +135,9 @@ if (isset($_POST['loginAdmin'])) {
               </div>
             </form>
           </div>
+          <?php if (isset($error)) : ?>
+            <p class="text-danger mt-2"><?php echo 'Kredensial salah' ?></p>
+          <?php endif; ?>
         </div>
 
       </div>

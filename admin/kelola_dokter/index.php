@@ -50,8 +50,9 @@ if (!isset($_SESSION['admin_authenticated']) || !$_SESSION['admin_authenticated'
     $alamat = $_POST['alamat'];
     $noHP = $_POST['noHP'];
     $poli = $_POST['poli'];
+    $password = $_POST['password'];
 
-    $query = mysqli_query($conn, "INSERT INTO dokter (nama, alamat, no_hp, id_poli) VALUES ('$namaDokter', '$alamat', '$noHP', '$poli')");
+    $query = mysqli_query($conn, "INSERT INTO dokter (nama, alamat, no_hp, id_poli, password) VALUES ('$namaDokter', '$alamat', '$noHP', '$poli', '$password')");
     if ($query) {
       header('Refresh:0');
     } else {
@@ -304,6 +305,10 @@ if (!isset($_SESSION['admin_authenticated']) || !$_SESSION['admin_authenticated'
                         <option value="<?php echo $item['id'] ?>"><?php echo $item['nama_poli'] ?></option>
                       <?php endforeach ?>
                     </select>
+                  </div>
+                  <div class="form-group">
+                    <label for="addPasswordDokter">Password</label>
+                    <input required name="password" type="password" class="form-control" id="addPasswordDokter" placeholder="Password" />
                   </div>
                   <div class="card-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">
