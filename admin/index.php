@@ -1,3 +1,13 @@
+<?php
+session_start();
+
+// Check if the user is not authenticated
+if (!isset($_SESSION['admin_authenticated']) || !$_SESSION['admin_authenticated']) {
+  header('Location: ../login/');
+  exit();
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -101,12 +111,12 @@
       <div class="sidebar sidebar-custom">
         <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
           <li class="nav-item">
-            <a href="#" class="nav-link">
-              <i class="fas fa-right-from-bracket"></i>
-              <p>
-                Logout
-              </p>
-            </a>
+            <form method="post" action="../login/logout.php">
+              <button class="btn nav-link btn-link text-white d-flex justify-content-start align-items-center">
+                <i class="fas fa-right-from-bracket mr-1"></i>
+                <p>Logout</p>
+              </button>
+            </form>
           </li>
         </ul>
       </div>
@@ -138,7 +148,6 @@
           $poli = mysqli_num_rows($querypoli);
           $pasien = mysqli_num_rows($querypasien);
           $obat = mysqli_num_rows($queryobat);
-          echo $dokter, $poli, $pasien, $obat;
           ?>
           <!-- Small boxes (Stat box) -->
           <div class="row">
