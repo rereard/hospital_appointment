@@ -295,10 +295,6 @@ if (!isset($_SESSION['admin_authenticated']) || !$_SESSION['admin_authenticated'
                   </div>
                   <div class="form-group">
                     <label for="addPoliDokter">Poli</label>
-                    <?php
-                    require_once("../../connection.php");
-                    $queryPoli = mysqli_query($conn, "SELECT * FROM poli");
-                    ?>
                     <select required name="poli" class="custom-select rounded-0" id="addPoliDokter">
                       <option value="">-------</option>
                       <?php foreach ($poli as $item) : ?>

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Dec 31, 2023 at 09:57 AM
+-- Generation Time: Jan 01, 2024 at 08:47 PM
 -- Server version: 10.4.22-MariaDB
 -- PHP Version: 8.0.13
 
@@ -29,17 +29,42 @@ USE `capstone_rs`;
 -- Table structure for table `daftar_poli`
 --
 
-DROP TABLE IF EXISTS `daftar_poli`;
 CREATE TABLE IF NOT EXISTS `daftar_poli` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `id_pasien` int(11) NOT NULL,
   `id_jadwal` int(11) NOT NULL,
   `keluhan` text NOT NULL,
   `no_antrian` int(11) NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `sudah_periksa` tinyint(1) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `id_pasien` (`id_pasien`),
   KEY `id_jadwal` (`id_jadwal`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Triggers `daftar_poli`
+--
+DELIMITER $$
+CREATE TRIGGER `before_insert_trigger` BEFORE INSERT ON `daftar_poli` FOR EACH ROW BEGIN
+    DECLARE last_queue_number INT;
+    DECLARE currentdate DATE;
+
+    -- Get the last queue number
+    SELECT MAX(no_antrian) INTO last_queue_number FROM daftar_poli;
+
+    -- Get the current date
+    SELECT CURDATE() INTO currentdate;
+
+    -- Check if the last record is from a different date
+    IF last_queue_number IS NULL OR last_queue_number = 0 OR DATE(NEW.created_at) != currentdate THEN
+        SET NEW.no_antrian = 1;
+    ELSE
+        SET NEW.no_antrian = last_queue_number + 1;
+    END IF;
+END
+$$
+DELIMITER ;
 
 -- --------------------------------------------------------
 
@@ -47,7 +72,6 @@ CREATE TABLE IF NOT EXISTS `daftar_poli` (
 -- Table structure for table `detail_periksa`
 --
 
-DROP TABLE IF EXISTS `detail_periksa`;
 CREATE TABLE IF NOT EXISTS `detail_periksa` (
   `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   `id_periksa` int(10) NOT NULL,
@@ -63,7 +87,6 @@ CREATE TABLE IF NOT EXISTS `detail_periksa` (
 -- Table structure for table `dokter`
 --
 
-DROP TABLE IF EXISTS `dokter`;
 CREATE TABLE IF NOT EXISTS `dokter` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `nama` varchar(255) NOT NULL,
@@ -81,7 +104,6 @@ CREATE TABLE IF NOT EXISTS `dokter` (
 -- Table structure for table `jadwal_periksa`
 --
 
-DROP TABLE IF EXISTS `jadwal_periksa`;
 CREATE TABLE IF NOT EXISTS `jadwal_periksa` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `id_dokter` int(11) NOT NULL,
@@ -98,7 +120,6 @@ CREATE TABLE IF NOT EXISTS `jadwal_periksa` (
 -- Table structure for table `obat`
 --
 
-DROP TABLE IF EXISTS `obat`;
 CREATE TABLE IF NOT EXISTS `obat` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `nama_obat` varchar(50) NOT NULL,
@@ -113,7 +134,6 @@ CREATE TABLE IF NOT EXISTS `obat` (
 -- Table structure for table `pasien`
 --
 
-DROP TABLE IF EXISTS `pasien`;
 CREATE TABLE IF NOT EXISTS `pasien` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `nama` varchar(255) NOT NULL,
@@ -130,11 +150,10 @@ CREATE TABLE IF NOT EXISTS `pasien` (
 -- Table structure for table `periksa`
 --
 
-DROP TABLE IF EXISTS `periksa`;
 CREATE TABLE IF NOT EXISTS `periksa` (
   `id` int(10) NOT NULL AUTO_INCREMENT,
   `id_daftar_poli` int(11) NOT NULL,
-  `tgl_periksa` datetime NOT NULL,
+  `tgl_periksa` date NOT NULL,
   `catatan` text NOT NULL,
   `biaya_periksa` int(11) NOT NULL,
   PRIMARY KEY (`id`),
@@ -147,7 +166,6 @@ CREATE TABLE IF NOT EXISTS `periksa` (
 -- Table structure for table `poli`
 --
 
-DROP TABLE IF EXISTS `poli`;
 CREATE TABLE IF NOT EXISTS `poli` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `nama_poli` varchar(25) NOT NULL,

@@ -41,6 +41,25 @@ if (!isset($_SESSION['dokter_authenticated']) || !$_SESSION['dokter_authenticate
 </head>
 
 <body class="hold-transition sidebar-mini layout-fixed">
+  <?php
+  require_once("../connection.php");
+  if (isset($_POST['addPeriksa'])) {
+    $id_daftar_poli = $_POST['id_daftar_poli'];
+    $tgl_periksa = $_POST['tgl_periksa'];
+    $mysqlFormattedDate = date('Y-m-d', strtotime($tgl_periksa));
+    $catatan = $_POST['catatan'];
+    $biaya_periksa = $_POST['biaya_periksa'];
+    $id_obat = $_POST['id_obat'];
+    $query = mysqli_query($conn, "INSERT INTO periksa (id_daftar_poli, tgl_periksa, catatan, biaya_periksa) VALUES ('$id_daftar_poli', '$mysqlFormattedDate', '$catatan', '$biaya_periksa')");
+    if ($query) {
+      $lastInsertedIDPeriksa = mysqli_insert_id($conn);
+      $queryUpdateDaftarPoli = mysqli_query($conn, "UPDATE daftar_poli SET sudah_periksa = 1 WHERE id = $id_daftar_poli");
+      if ($queryUpdateDaftarPoli) {
+        $query2 = mysqli_query($conn, "INSERT INTO detail_periksa (id_periksa, id_obat) VALUES ('$lastInsertedIDPeriksa', '$id_obat')");
+      }
+    }
+  }
+  ?>
   <div class="wrapper">
 
     <!-- Preloader -->
@@ -91,7 +110,7 @@ if (!isset($_SESSION['dokter_authenticated']) || !$_SESSION['dokter_authenticate
               <a href="riwayat_pasien" class="nav-link">
                 <i class="nav-icon fas fa-notes-medical"></i>
                 <p>
-                  Riwayat Pasien
+                  Riwayat Periksa
                 </p>
               </a>
             </li>
@@ -99,7 +118,7 @@ if (!isset($_SESSION['dokter_authenticated']) || !$_SESSION['dokter_authenticate
               <a href="profil_dokter" class="nav-link">
                 <i class="nav-icon fas fa-user-doctor"></i>
                 <p>
-                  Profil?
+                  Profil
                 </p>
               </a>
             </li>
@@ -156,20 +175,27 @@ if (!isset($_SESSION['dokter_authenticated']) || !$_SESSION['dokter_authenticate
                         <th>Aksi</th>
                       </tr>
                     </thead>
-                    <tbody>
-                      <tr>
-                        <td>69B</td>
-                        <td>Pepsiman</td>
-                        <td>Senin, 12.00-15.00</td>
-                        <td>Muntaber</td>
-                        <td>
-                          <div class="margin">
-                            <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#modal-periksa">
-                              <i class="fa fa-pen"></i> Periksa
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
+                    <tbody id="table-body">
+                      <?php
+                      $id_dokter = $_SESSION['id_dokter'];
+                      require("../connection.php");
+                      $query = mysqli_query($conn, "SELECT daftar_poli.id, daftar_poli.no_antrian, daftar_poli.keluhan, pasien.nama as nama_pasien, jadwal_periksa.hari, jadwal_periksa.jam_mulai, jadwal_periksa.jam_selesai FROM daftar_poli JOIN jadwal_periksa ON daftar_poli.id_jadwal = jadwal_periksa.id JOIN dokter ON jadwal_periksa.id_dokter = dokter.id JOIN pasien ON daftar_poli.id_pasien = pasien.id WHERE jadwal_periksa.id_dokter = $id_dokter AND daftar_poli.sudah_periksa = 0;");
+                      ?>
+                      <?php while ($row = mysqli_fetch_array($query)) : ?>
+                        <tr>
+                          <td><?php echo $row['no_antrian'] ?></td>
+                          <td><?php echo $row['nama_pasien'] ?></td>
+                          <td><?php echo $row['hari'] . ', ' . substr($row['jam_mulai'], 0, 5) . '-' . substr($row['jam_selesai'], 0, 5) ?></td>
+                          <td><?php echo $row['keluhan'] ?></td>
+                          <td>
+                            <div class="margin">
+                              <button value="<?php echo $row['id'] ?>" type="button" class="buttonperiksa btn btn-warning" data-toggle="modal" data-target="#modal-periksa">
+                                <i class="fa fa-pen"></i> Periksa
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      <?php endwhile ?>
                     </tbody>
                   </table>
                 </div>
@@ -189,15 +215,19 @@ if (!isset($_SESSION['dokter_authenticated']) || !$_SESSION['dokter_authenticate
                   </button>
                 </div>
                 <div class="modal-body">
-                  <form>
+                  <form action="../dokter/" method="post">
+                    <div class="form-group">
+                      <label for="idDaftarPoli">ID Pendaftaran Poli</label>
+                      <input name="id_daftar_poli" type="text" class="form-control" id="idDaftarPoli" placeholder="ID DaftarPoli" readonly />
+                    </div>
                     <div class="form-group">
                       <label for="addNamaPasien">Nama</label>
-                      <input type="text" class="form-control" id="addNamaPasien" placeholder="Nama" value="Pepsiman" disabled />
+                      <input type="text" class="form-control" id="addNamaPasien" placeholder="Nama" disabled />
                     </div>
                     <div class="form-group">
                       <label>Tanggal Periksa</label>
                       <div class="input-group date" id="tanggalperiksa" data-target-input="nearest">
-                        <input type="text" class="form-control datetimepicker-input" id="tanggalperiksa" data-toggle="datetimepicker" data-target="#tanggalperiksa" placeholder="dd/mm/yy" />
+                        <input name="tgl_periksa" type="text" class="tglan form-control datetimepicker-input" id="tanggalperiksa" data-toggle="datetimepicker" data-target="#tanggalperiksa" placeholder="dd/mm/yy" />
                         <div class="input-group-append" data-target="#tanggalperiksa" data-toggle="datetimepicker">
                           <div class="input-group-text"><i class="fa fa-calendar"></i></div>
                         </div>
@@ -205,29 +235,23 @@ if (!isset($_SESSION['dokter_authenticated']) || !$_SESSION['dokter_authenticate
                     </div>
                     <div class="form-group">
                       <label>Catatan</label>
-                      <textarea class="form-control" rows="3" placeholder="Catatan Periksa"></textarea>
+                      <textarea name="catatan" class="form-control" rows="3" placeholder="Catatan Periksa"></textarea>
                     </div>
                     <div class="form-group">
                       <label>Obat</label>
-                      <select class="form-control select2" style="width: 100%;">
-                        <option selected="selected">-----</option>
-                        <option>Meth</option>
-                        <option>Mariyuana</option>
-                        <option>Opium</option>
-                        <option>Cocaine</option>
+                      <select name="id_obat" id="pilihobat" class="custom-select rounded-0" style="width: 100%;">
                       </select>
                     </div>
                     <div class="form-group">
                       <label for="addBiaya">Biaya Periksa</label>
-                      <input type="text" class="form-control" id="addBiaya" placeholder="Nama" value="Rp 696.100,00" disabled />
+                      <input type="text" class="form-control" id="addBiaya" placeholder="Nama" disabled />
+                      <input name="biaya_periksa" type="hidden" class="form-control" id="addBiayaHidden" placeholder="Nama" />
                     </div>
                     <div class="card-footer">
                       <button type="button" class="btn btn-default" data-dismiss="modal">
                         Tutup
                       </button>
-                      <button type="submit" class="btn btn-primary float-right">
-                        Selesai
-                      </button>
+                      <input type="submit" name="addPeriksa" value="Selesai" class="btn btn-warning float-right" />
                     </div>
                   </form>
                 </div>
@@ -282,6 +306,7 @@ if (!isset($_SESSION['dokter_authenticated']) || !$_SESSION['dokter_authenticate
   <!-- AdminLTE dashboard demo (This is only for demo purposes) -->
   <script src="../dist/js/pages/dashboard.js"></script>
   <script>
+    let biayaawal = 150000
     $(function() {
       //Initialize Select2 Elements
       $('.select2').select2()
@@ -292,10 +317,82 @@ if (!isset($_SESSION['dokter_authenticated']) || !$_SESSION['dokter_authenticate
       })
       //Date picker
       $('#tanggalperiksa').datetimepicker({
-        format: 'L',
-        minDate: moment().startOf('day'),
+        format: 'DD/MM/YYYY',
+        locale: 'id',
       });
     });
+    $(document).ready(function() {
+      let dataQuery = []
+      let dataObat = []
+      $.ajax({
+        url: 'query.php',
+        type: 'GET',
+        dataType: 'json',
+        success: function(data) {
+          dataQuery = data
+          console.log(dataQuery);
+        },
+        error: function(error) {
+          console.log('Error fetching data: ' + error);
+        },
+      })
+      $('.buttonperiksa').click(function() {
+        var id_daftar_poli = $(this).val()
+        $('#pilihobat').val("")
+        biayaawal = 150000
+        $('#addBiaya').val("Rp " + rpFormat(biayaawal) + ",00")
+        $.each(dataQuery, function(index, item) {
+          if (item.id == id_daftar_poli) {
+            $('#addNamaPasien').val(item.nama_pasien)
+            $('#idDaftarPoli').val(item.id)
+          }
+        });
+        $.ajax({
+          url: 'queryAllObat.php',
+          method: 'GET',
+          dataType: 'json',
+          success: function(data) {
+            console.log(data);
+            dataObat = data
+            $('#pilihobat').empty()
+            $('#pilihobat').append($('<option value="">-------</option>'));
+            $.each(data, function(index, option) {
+              console.log(option);
+              var optionElement = $('<option>', {
+                value: option.id,
+                text: option.nama_obat + " / Rp " + rpFormat(option.harga) + ",00"
+              })
+              $('#pilihobat').append(optionElement);
+            });
+          },
+          error: function(xhr, status, error) {
+            console.error('Error fetching data:', status, error);
+          }
+        });
+      })
+
+      function rpFormat(number) {
+        return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+      }
+
+      $('#addBiaya').val("Rp " + rpFormat(biayaawal) + ",00")
+      $('#pilihobat').change(function() {
+        console.log($('#pilihobat').val());
+        biayaawal = 150000
+        $.each(dataObat, function(index, option) {
+          if (option.id == $('#pilihobat').val()) {
+            biayaawal += parseInt(option.harga)
+          }
+        });
+        console.log(biayaawal);
+        $('#addBiaya').val("Rp " + rpFormat(biayaawal) + ",00")
+        $('#addBiayaHidden').val(biayaawal)
+        console.log('biaya hidden' + $('#addBiayaHidden').val());
+      })
+    })
+    $('.tglan').change(function() {
+      console.log($('.tglan').val());
+    })
   </script>
 </body>
 
