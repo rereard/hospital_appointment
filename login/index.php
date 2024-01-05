@@ -2,10 +2,10 @@
 session_start();
 
 if ($_SESSION) {
-  if (isset($_SESSION['admin_authenticated']) || $_SESSION['admin_authenticated']) {
+  if (isset($_SESSION['admin_authenticated']) && $_SESSION['admin_authenticated']) {
     header('Location: ../admin/');
     exit();
-  } elseif (isset($_SESSION['dokter_authenticated']) || $_SESSION['dokter_authenticated']) {
+  } elseif (isset($_SESSION['dokter_authenticated']) && $_SESSION['dokter_authenticated']) {
     header('Location: ../dokter/');
     exit();
   } else {
@@ -115,7 +115,7 @@ if (isset($_POST['loginDokter'])) {
                 <input required type="phone" name="noHPDokter" class="form-control" placeholder="No HP">
                 <div class="input-group-append">
                   <div class="input-group-text">
-                    <span class="fas fa-envelope"></span>
+                    <span class="fas fa-phone-square"></span>
                   </div>
                 </div>
               </div>

@@ -46,10 +46,16 @@
           if ($query) {
             $lastInsertedID = mysqli_insert_id($conn);
             $query2 = mysqli_query($conn, "SELECT * FROM daftar_poli WHERE id = $lastInsertedID");
+            $query2 = mysqli_query($conn, "SELECT daftar_poli.no_antrian, daftar_poli.id, jadwal_periksa.hari, jadwal_periksa.jam_mulai, jadwal_periksa.jam_selesai, poli.nama_poli, dokter.nama FROM daftar_poli join jadwal_periksa on daftar_poli.id_jadwal = jadwal_periksa.id join dokter on jadwal_periksa.id_dokter = dokter.id join poli on dokter.id_poli = poli.id WHERE daftar_poli.id = $lastInsertedID;");
             if ($query2) {
               $item = mysqli_fetch_assoc($query2);
               $_SESSION['add_daftar_poli'] = array(
-                'no_antrian' => $item['no_antrian']
+                'hari' => $item['hari'],
+                'no_antrian' => $item['no_antrian'],
+                'jam_mulai' => $item['jam_mulai'],
+                'jam_selesai' => $item['jam_selesai'],
+                'nama_poli' => $item['nama_poli'],
+                'nama_dokter' => $item['nama']
               );
             }
           }
@@ -136,8 +142,12 @@
                 <dl>
                   <dt>Nomor antrian anda</dt>
                   <dd><?php echo $_SESSION['add_daftar_poli']['no_antrian'] ?></dd>
+                  <dt>Hari</dt>
+                  <dd><?php echo $_SESSION['add_daftar_poli']['hari'] . ', ' . substr($_SESSION['add_daftar_poli']['jam_mulai'], 0, 5) . '-' . substr($_SESSION['add_daftar_poli']['jam_selesai'], 0, 5) ?></dd>
+                  <dt>Poli/Dokter</dt>
+                  <dd><?php echo $_SESSION['add_daftar_poli']['nama_poli'] . '/' . $_SESSION['add_daftar_poli']['nama_dokter'] ?></dd>
                 </dl>
-                <p class="text-danger font-italic"><b>Simpan Nomor Antrian anda!</b></p>
+                <p class="text-danger font-italic"><b>Ingat!</b></p>
               </div>
             </div>
           </div>
