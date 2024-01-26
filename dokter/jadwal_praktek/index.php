@@ -64,6 +64,19 @@ if (!isset($_SESSION['dokter_authenticated']) || !$_SESSION['dokter_authenticate
       header('Refresh:0');
     }
   }
+  if (isset($_POST['status'])) {
+    $idDokter = $_SESSION['id_dokter'];
+    $idJadwal = $_POST['id_jadwal'];
+    $status = $_POST['status'];
+    $query = null;
+    if ($status == 1) {
+      $query = mysqli_query($conn, "UPDATE jadwal_periksa SET status = 1 WHERE id = $idJadwal AND id_dokter = $idDokter");
+      $reset_query = mysqli_query($conn, "UPDATE jadwal_periksa SET status = 0 WHERE id != $idJadwal AND id_dokter = $idDokter");
+    } else {
+      $query = mysqli_query($conn, "UPDATE jadwal_periksa SET status = 0 WHERE id = $idJadwal AND id_dokter = $idDokter");
+    }
+    header('Refresh:0');
+  }
   if (isset($_POST['editJadwal'])) {
     $idJadwal = $_POST['idJadwal'];
     $hari = $_POST['hari'];
@@ -179,6 +192,7 @@ if (!isset($_SESSION['dokter_authenticated']) || !$_SESSION['dokter_authenticate
                         <th>Hari</th>
                         <th>Jam Mulai</th>
                         <th>Jam Selesai</th>
+                        <th>Status</th>
                         <th style="width: 160px;">Aksi</th>
                       </tr>
                     </thead>
@@ -188,36 +202,39 @@ if (!isset($_SESSION['dokter_authenticated']) || !$_SESSION['dokter_authenticate
                       require("../../connection.php");
                       $query = mysqli_query($conn, "SELECT * FROM jadwal_periksa WHERE id_dokter = $id_dokter");
                       $jumlah = mysqli_num_rows($query);
+                      $no = 1;
                       ?>
                       <?php while ($row = mysqli_fetch_array($query)) : ?>
                         <tr>
-                          <td>1</td>
+                          <td><?php echo $no ?></td>
                           <td><?php echo $row['hari'] ?></td>
                           <td><?php echo substr($row['jam_mulai'], 0, 5) ?></td>
                           <td><?php echo substr($row['jam_selesai'], 0, 5) ?></td>
                           <td>
+                            <div class="form-check">
+                              <input value="<?php echo $row['id'] ?>" <?php echo ($row['status'] == 0) ? '' : 'checked' ?> type="checkbox" class="status_cb form-check-input" id="status">
+                              <label for="status"><?php echo ($row['status'] == 0) ? 'Tidak Aktif' : 'Aktif' ?></label>
+                            </div>
+                          </td>
+                          <td>
                             <button type="button" value="<?php echo $row['id'] ?>" class="buttonEdit2 btn btn-warning btn-block mb-2" data-toggle="modal" data-target="#modal-editDokter">
                               <i class="fa fa-pen"></i> Edit
                             </button>
-                            <button type="button" value="<?php echo $row['id'] ?>" class="buttonHapus2 btn btn-danger btn-block text-nowrap" data-toggle="modal" data-target="#modal-sm">
-                              <i class="fa fa-trash"></i> Hapus
-                            </button>
                           </td>
                         </tr>
+                        <?php $no++ ?>
                       <?php endwhile ?>
                     </tbody>
                   </table>
                 </div>
                 <!-- /.card-body -->
-                <?php if ($jumlah == 0) : ?>
-                  <div class="card-footer clearfix">
-                    <dic class="m-0 float-right">
-                      <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal-addDokter">
-                        <i class="fa fa-plus"></i> Tambah
-                      </button>
-                    </dic>
-                  </div>
-                <?php endif ?>
+                <div class="card-footer clearfix">
+                  <dic class="m-0 float-right">
+                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal-addDokter">
+                      <i class="fa fa-plus"></i> Tambah
+                    </button>
+                  </dic>
+                </div>
               </div>
               <!-- /.card -->
             </div>
@@ -425,6 +442,25 @@ if (!isset($_SESSION['dokter_authenticated']) || !$_SESSION['dokter_authenticate
       $.post(ajaxurl, data, function(response) {
         location.reload();
       });
+    })
+    $('.status_cb').change(function() {
+      console.log('clicked')
+      var id = $(this).val();
+      var status = 0;
+      if (this.checked) {
+        status = 1
+      } else {
+        status = 0
+      }
+      console.log(status)
+      var ajaxurl = '../../dokter/jadwal_praktek/';
+      data = {
+        'id_jadwal': id,
+        'status': status
+      };
+      $.post(ajaxurl, data, function(response) {
+        location.reload();
+      })
     })
     $('.buttonEdit2').click(function() {
       selectedId = $(this).val();
